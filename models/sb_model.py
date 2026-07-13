@@ -10,7 +10,7 @@ class SBModel(BaseModel):
     def modify_commandline_options(parser, is_train=True):
         """  Configures options specific for SB model
         """
-        parser.add_argument('--mode', type=str, default="sb", choices='(FastCUT, fastcut, sb)')
+        parser.add_argument('--mode', type=str, default="sb", choices=('FastCUT', 'fastcut', 'sb'))
 
         parser.add_argument('--lambda_GAN', type=float, default=1.0, help='weight for GAN loss：GAN(G(X))')
         parser.add_argument('--lambda_NCE', type=float, default=1.0, help='weight for NCE loss: NCE(G(X), X)')

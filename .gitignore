@@ -1,0 +1,14 @@
+__pycache__/
+*.pyc
+
+# locally-prepared trainA/trainB/testA/testB copies (regenerate via
+# datasets/prepare_monet_dataset.py from dataset_monet/dataset_paisajes)
+datasets/monet2photo/
+
+checkpoints/
+results/
+*.pth
+
+# eval/submission scratch output
+**/eval_tmp/
+**/submission_dryrun/
