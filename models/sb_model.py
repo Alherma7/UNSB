@@ -268,8 +268,7 @@ class SBModel(BaseModel):
         bs =  self.real_A.size(0)
         
         fake = self.fake_B.detach()
-        std = torch.rand(size=[1]).item() * self.opt.std
-        
+
         pred_fake = self.netD(fake,self.time_idx)
         self.loss_D_fake = self.criterionGAN(pred_fake, False).mean()
         self.pred_real = self.netD(self.real_B,self.time_idx)
@@ -296,8 +295,7 @@ class SBModel(BaseModel):
         
         """Calculate GAN and NCE loss for the generator"""
         fake = self.fake_B
-        std = torch.rand(size=[1]).item() * self.opt.std
-        
+
         if self.opt.lambda_GAN > 0.0:
             pred_fake = self.netD(fake,self.time_idx)
             self.loss_G_GAN = self.criterionGAN(pred_fake, True).mean() * self.opt.lambda_GAN
