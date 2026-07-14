@@ -23,6 +23,10 @@ def parse_args():
     parser.add_argument('--seed', type=int, default=42)
     parser.add_argument('--expected_monet_count', type=int, default=300)
     parser.add_argument('--expected_photo_count', type=int, default=7038)
+    parser.add_argument('--photo_sample_size', type=int, default=None,
+                        help='if set, randomly subsample the photo set (domain A) down to this many '
+                             'images (before the train/val split) -- for quick experiments instead of '
+                             'training on the full photo set')
     return parser.parse_args()
 
 
@@ -52,6 +56,14 @@ def main():
     assert len(photo_files) == args.expected_photo_count, (
         f"Expected {args.expected_photo_count} photos in {args.photo_dir}, found {len(photo_files)}"
     )
+
+    full_photo_count = len(photo_files)
+    if args.photo_sample_size is not None:
+        assert args.photo_sample_size <= full_photo_count, (
+            f"--photo_sample_size ({args.photo_sample_size}) can't exceed the available photo count ({full_photo_count})"
+        )
+        photo_files = random.sample(photo_files, args.photo_sample_size)
+
     assert args.val_size < len(photo_files) and args.val_size <= len(monet_files)
 
     # trainB: full Monet set. Kaggle's own MiFID reference set IS this same
@@ -76,6 +88,8 @@ def main():
     manifest = {
         'seed': args.seed,
         'val_size': args.val_size,
+        'full_photo_count': full_photo_count,
+        'photo_sample_size': args.photo_sample_size,
         'trainA_count': len(train_photos),
         'trainB_count': len(monet_files),
         'testA_count': len(val_photos),
@@ -87,6 +101,8 @@ def main():
     with open(os.path.join(args.out_dir, 'split_manifest.json'), 'w') as f:
         json.dump(manifest, f, indent=2)
 
+    if args.photo_sample_size is not None:
+        print(f"photo set subsampled: {args.photo_sample_size} of {full_photo_count} available photos")
     print(f"trainA: {manifest['trainA_count']} photos")
     print(f"trainB: {manifest['trainB_count']} monet paintings")
     print(f"testA:  {manifest['testA_count']} held-out photos")
